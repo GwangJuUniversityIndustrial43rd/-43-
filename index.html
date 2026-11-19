@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#63c2df">
+  <meta name="description" content="광주대학교 산업디자인학과 제43회 졸업전시회 DIRECTION 초청장">
+  <title>DIRECTION | 졸업전시회 초청장</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; background: #111; }
+    body { overflow: hidden; font-family: system-ui, -apple-system, "Noto Sans KR", sans-serif; }
+    .viewer { position: relative; width: 100%; height: 100dvh; display: flex; align-items: center; justify-content: center; }
+    .page { display: none; position: relative; height: 100%; width: 100%; align-items: center; justify-content: center; }
+    .page.active { display: flex; }
+    .page img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+    .nav { position: fixed; top: 50%; transform: translateY(-50%); border: 0; border-radius: 50%; width: 42px; height: 42px; background: rgba(255,255,255,.65); color: #333; font-size: 22px; cursor: pointer; z-index: 5; }
+    .nav:disabled { opacity: .25; cursor: default; }
+    #prev { left: 12px; } #next { right: 12px; }
+    .count { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,.72); color: #333; padding: 3px 9px; border-radius: 20px; font-size: 11px; z-index: 5; }
+    .map-hotspot { position: absolute; width: 16.5%; height: 11.5%; left: 41.8%; top: 73.5%; z-index: 4; display: block; }
+    @media (max-width: 600px) {
+      .nav { width: 36px; height: 36px; font-size: 19px; }
+      #prev { left: 6px; } #next { right: 6px; }
+      .count { bottom: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="viewer" aria-label="졸업전시회 초청장">
+    <section class="page active" id="page1" aria-label="1페이지">
+      <img src="assets/page-1.png" alt="DIRECTION 졸업전시회 초청장 표지">
+      <a class="map-hotspot" href="https://kko.to/PBFf9T_FVq" target="_blank" rel="noopener" aria-label="전시장 위치 지도 열기"></a>
+    </section>
+    <section class="page" id="page2" aria-label="2페이지">
+      <img src="assets/page-2.png" alt="졸업전시회 초청 안내 및 전시 내용">
+    </section>
+    <button class="nav" id="prev" type="button" aria-label="이전 페이지" disabled>‹</button>
+    <button class="nav" id="next" type="button" aria-label="다음 페이지">›</button>
+    <div class="count" id="count" aria-live="polite">1 / 2</div>
+  </main>
+  <script>
+    const pages = [...document.querySelectorAll('.page')];
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const count = document.getElementById('count');
+    let current = 0;
+    function showPage(n) {
+      current = Math.max(0, Math.min(pages.length - 1, n));
+      pages.forEach((page, i) => page.classList.toggle('active', i === current));
+      prev.disabled = current === 0;
+      next.disabled = current === pages.length - 1;
+      count.textContent = `${current + 1} / ${pages.length}`;
+    }
+    prev.addEventListener('click', () => showPage(current - 1));
+    next.addEventListener('click', () => showPage(current + 1));
+    let startX = null;
+    document.querySelector('.viewer').addEventListener('touchstart', e => {
+      if (e.touches.length === 1) startX = e.touches[0].clientX;
+    }, {passive: true});
+    document.querySelector('.viewer').addEventListener('touchend', e => {
+      if (startX === null) return;
+      const delta = e.changedTouches[0].clientX - startX;
+      if (Math.abs(delta) > 45) showPage(current + (delta < 0 ? 1 : -1));
+      startX = null;
+    }, {passive: true});
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') showPage(current + 1);
+      if (e.key === 'ArrowLeft') showPage(current - 1);
+    });
+  </script>
+</body>
+</html>
